@@ -7,9 +7,17 @@ import os
 import sys
 import random
 
-
+# 总人数
 total_person_num = 4
+# 每人起始金额
 candidates = [975, 975, 975, 975]
+# 红包占总金额的最大上限
+up_percent = 0.75
+# 手气最佳需要翻的倍数
+who_win = 2
+# 第一个红包里面有多少钱
+first_hongbao = 100
+# 轮次计数
 times = 0
 
 
@@ -43,11 +51,12 @@ def distribute_hongbao(total_money, person_num):
     :param person_num: 人数
     :return: false or result list
     """
+    global up_percent
     if total_money < person_num * 0.01:
         return False
     result = []
     for i in list(range(1, person_num)):
-        this_money = round(random.uniform(0.01, total_money*0.7), 2)
+        this_money = round(random.uniform(0.01, total_money*up_percent), 2)
         result.append(this_money)
         total_money = total_money - this_money
     result.append(round(total_money, 2))
@@ -77,8 +86,8 @@ def find_max(wat_we_get):
 
 
 def play_next(pre_victor):
-    global candidates, total_person_num
-    money = pre_victor[1] * 2
+    global candidates, total_person_num, who_win
+    money = pre_victor[1] * who_win
     candidates[pre_victor[0]] -= money
     wat_we_get = distribute_hongbao(money, total_person_num)
     if wat_we_get:
@@ -99,9 +108,9 @@ def first_time():
     第一次抢红包
     :return: [bool, victor_info]
     """
-    global total_person_num, times
+    global total_person_num, times, first_hongbao
     all_info()
-    wat_we_get = distribute_hongbao(100, total_person_num)
+    wat_we_get = distribute_hongbao(first_hongbao, total_person_num)
     victor = find_max(wat_we_get)
     add_money(wat_we_get)
     flag = check_valid()
